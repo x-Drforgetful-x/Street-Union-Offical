@@ -1,0 +1,1 @@
+web: gunicorn futurebite.wsgi:application
