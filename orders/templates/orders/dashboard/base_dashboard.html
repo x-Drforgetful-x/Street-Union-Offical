@@ -1,0 +1,26 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+<section class="py-5 dashboard-shell">
+    <div class="container-fluid px-4 px-lg-5">
+        <div class="row g-4">
+            <div class="col-xl-2">
+                <div class="panel p-3 dashboard-nav sticky-summary">
+                    <div class="section-kicker mb-2">Street Union Co</div>
+                    <h5 class="fw-bold mb-3">Operations</h5>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'orders:dashboard_home' %}" class="btn btn-outline-light text-start">Overview</a>
+                        <a href="{% url 'orders:dashboard_orders' %}" class="btn btn-outline-light text-start">Live orders</a>
+                        <a href="{% url 'orders:kitchen_screen' %}" class="btn btn-outline-light text-start">Kitchen screen</a>
+                        <a href="{% url 'orders:dashboard_products' %}" class="btn btn-outline-light text-start">Products</a>
+                        <a href="{% url 'orders:dashboard_specials' %}" class="btn btn-outline-light text-start">Specials</a>
+                        <a href="{% url 'orders:dashboard_quotes' %}" class="btn btn-outline-light text-start">Quotes</a>
+                        <a href="{% url 'orders:dashboard_invoices' %}" class="btn btn-outline-light text-start">Invoices</a>
+                        <a href="{% url 'orders:dashboard_settings' %}" class="btn btn-outline-light text-start">Brand settings</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-10">{% block dashboard_content %}{% endblock %}</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block dashboard_content %}
+<div class="panel p-4 mb-4 kitchen-mode">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <div class="section-kicker">Tablet view</div>
+            <h1 class="fw-bold mb-0">Kitchen screen</h1>
+        </div>
+        <div class="small text-light-emphasis">Large cards. Auto refresh every 15 seconds.</div>
+    </div>
+    <div id="kitchenOrderGrid" class="row g-4">
+        {% for order in orders %}
+        <div class="col-md-6 col-xxl-4" data-order-id="{{ order.id }}">
+            <div class="panel p-4 h-100 kitchen-card">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <div class="section-kicker mb-1">{{ order.get_order_type_display }}</div>
+                        <h2 class="fw-bold mb-1">{{ order.order_number }}</h2>
+                        <div class="text-light-emphasis">{{ order.customer.first_name }} · {{ order.customer.phone_number }}</div>
+                    </div>
+                    <span class="status-badge">{{ order.get_status_display }}</span>
+                </div>
+                <div class="mini-panel p-3 mb-3 h-100">
+                    <ul class="list-unstyled mb-0 d-grid gap-3 kitchen-item-list">
+                        {% for item in order.items.all %}
+                        <li>
+                            <div class="fw-semibold">{{ item.quantity }} × {{ item.product_name }}</div>
+                            {% if item.extras_summary %}<div class="small text-light-emphasis">{{ item.extras_summary }}</div>{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <form method="post" action="{% url 'orders:update_order_status' order.id %}" class="d-grid gap-2 mt-auto">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'orders:kitchen_screen' %}">
+                    <select name="status" class="form-select form-select-lg">
+                        {% for value,label in status_form.fields.status.choices %}
+                        <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button class="btn btn-warning btn-lg flex-fill" type="submit">Save status</button>
+                        <a href="{% url 'orders:send_order_whatsapp_reply' order.id 'status' %}" target="_blank" class="btn btn-outline-success btn-lg flex-fill">WhatsApp update</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><div class="empty-panel">Kitchen is clear right now.</div></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+window.orderFeedUrl = "{% url 'orders:dashboard_orders_feed' %}";
+window.enableKitchenBoard = true;
+</script>
+{% endblock %}

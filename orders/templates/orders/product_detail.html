@@ -1,0 +1,54 @@
+{% extends 'orders/base.html' %}
+{% load order_tags %}
+{% block title %}{{ product.name }} | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5 align-items-start">
+            <div class="col-lg-6">
+                <div class="detail-image" style="background-image:url('{{ product.image_url|default:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80' }}')"></div>
+            </div>
+            <div class="col-lg-6">
+                <span class="section-kicker">{{ product.category.name }}</span>
+                <h1 class="fw-bold">{{ product.name }}</h1>
+                <p class="lead text-light-emphasis">{{ product.description|default:product.short_description }}</p>
+                <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
+                    <span class="price-pill large">{{ currency_symbol }}{{ product.price }}</span>
+                    <span class="badge text-bg-dark border border-secondary">{{ product.get_spice_level_display }}</span>
+                    <span class="badge text-bg-dark border border-secondary">{{ product.prep_time_minutes }} min prep</span>
+                    <span class="badge text-bg-warning text-dark">In cart: {{ product_quantity_in_cart }}</span>
+                </div>
+                <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="panel p-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'orders:cart' %}">
+                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4">
+                        <h5 class="mb-0">Extras</h5>
+                        <div class="quantity-switcher">
+                            <button type="button" class="qty-btn js-qty-minus">−</button>
+                            <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                            <button type="button" class="qty-btn js-qty-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        {% for extra in product.extras.all %}
+                        <div class="col-sm-6">
+                            <label class="extra-option w-100">
+                                <input type="checkbox" name="extras" value="{{ extra.id }}">
+                                <span>{{ extra.name }}</span>
+                                <strong>{{ currency_symbol }}{{ extra.price }}</strong>
+                            </label>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-light-emphasis small">No extras configured yet.</div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-warning btn-lg" type="submit">Add to cart</button>
+                        <button class="btn btn-dark btn-lg" type="submit" name="next" value="{% url 'orders:checkout' %}">Buy now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

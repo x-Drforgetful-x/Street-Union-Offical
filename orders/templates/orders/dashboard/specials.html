@@ -1,0 +1,31 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block dashboard_content %}
+<div class="panel p-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div>
+            <div class="section-kicker">Weekly promos</div>
+            <h1 class="fw-bold mb-0">Specials</h1>
+        </div>
+        <a href="{% url 'orders:special_create' %}" class="btn btn-warning">Create special</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-borderless align-middle">
+            <thead><tr><th>Title</th><th>Promo Price</th><th>Featured</th><th>Active</th><th>Dates</th><th></th></tr></thead>
+            <tbody>
+            {% for special in specials %}
+            <tr>
+                <td>{{ special.title }}</td>
+                <td>{{ currency_symbol }}{{ special.promo_price|default:'0.00' }}</td>
+                <td>{{ special.is_featured|yesno:'Yes,No' }}</td>
+                <td>{{ special.is_active|yesno:'Yes,No' }}</td>
+                <td>{{ special.start_date|default:'-' }} to {{ special.end_date|default:'-' }}</td>
+                <td><a href="{% url 'orders:special_edit' special.id %}" class="btn btn-sm btn-outline-light">Edit</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-light-emphasis">No specials available.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

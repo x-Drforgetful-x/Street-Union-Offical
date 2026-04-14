@@ -1,0 +1,27 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block dashboard_content %}
+<div class="panel p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <div class="section-kicker">Brand and contact</div>
+            <h1 class="fw-bold mb-0">Dashboard settings</h1>
+        </div>
+    </div>
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="{% if field.name == 'address' %}col-12{% else %}col-md-6{% endif %}">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<div class="text-warning small mt-1">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="col-12 d-flex gap-2 flex-wrap mt-2">
+            <button class="btn btn-warning" type="submit">Save settings</button>
+        </div>
+    </form>
+    <div class="mini-panel p-3 mt-4 small text-light-emphasis">
+        PayFast and PayShap links are configured through environment variables: <code>PAYFAST_URL</code> and <code>PAYSHAP_HANDLE</code>.
+    </div>
+</div>
+{% endblock %}

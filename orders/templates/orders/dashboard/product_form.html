@@ -1,0 +1,34 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block dashboard_content %}
+<div class="panel p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <div class="section-kicker">Menu builder</div>
+            <h1 class="fw-bold mb-0">{{ page_title }}</h1>
+        </div>
+        <a href="{% url 'orders:dashboard_products' %}" class="btn btn-outline-light">Back to products</a>
+    </div>
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="{% if field.name in 'description short_description image_url' %}col-12{% else %}col-md-6{% endif %}">
+                {% if field.field.widget.input_type == 'checkbox' %}
+                    <div class="form-check form-switch pt-4 mt-2">
+                        {{ field }}
+                        <label class="form-check-label text-white" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                {% else %}
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                {% endif %}
+                {% if field.help_text %}<div class="small text-light-emphasis mt-1">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div class="text-warning small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        <div class="col-12 d-flex gap-2 flex-wrap mt-2">
+            <button class="btn btn-warning" type="submit">{{ submit_label }}</button>
+            <a href="{% url 'orders:dashboard_products' %}" class="btn btn-outline-light">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

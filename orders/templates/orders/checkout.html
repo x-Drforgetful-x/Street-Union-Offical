@@ -1,0 +1,76 @@
+{% extends 'orders/base.html' %}
+{% block title %}Checkout | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <h1 class="fw-bold mb-4">Checkout</h1>
+                <form method="post" class="panel p-4">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First name</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last name</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone number</label>
+                            {{ form.phone_number }}
+                            {{ form.phone_number.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Order type</label>
+                            {{ form.order_type }}
+                            {{ form.order_type.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Delivery area</label>
+                            {{ form.delivery_zone }}
+                            {{ form.delivery_zone.errors }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Delivery address</label>
+                            {{ form.delivery_address }}
+                            {{ form.delivery_address.errors }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Order notes</label>
+                            {{ form.note }}
+                            {{ form.note.errors }}
+                        </div>
+                    </div>
+                    <div class="mt-4 d-grid d-md-flex gap-2">
+                        <button class="btn btn-warning btn-lg">Create order and continue to WhatsApp</button>
+                        <a href="{% url 'orders:cart' %}" class="btn btn-outline-light btn-lg">Back to cart</a>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel p-4 sticky-summary">
+                    <h4 class="fw-bold mb-3">Cart summary</h4>
+                    {% for item in cart_items %}
+                    <div class="d-flex justify-content-between gap-3 mb-2">
+                        <div>{{ item.quantity }} x {{ item.name }}</div>
+                        <strong>{{ currency_symbol }}{{ item.line_total }}</strong>
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between"><span>Subtotal</span><strong>{{ currency_symbol }}{{ cart_subtotal }}</strong></div>
+                    <div class="small text-light-emphasis mt-3">Your order number is generated automatically after checkout using your first initial and the last 4 digits of your phone number plus a timestamp.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

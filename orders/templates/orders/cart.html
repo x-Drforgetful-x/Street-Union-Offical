@@ -1,0 +1,61 @@
+{% extends 'orders/base.html' %}
+{% load order_tags %}
+{% block title %}Cart | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <h1 class="fw-bold mb-4">Your cart</h1>
+                {% if cart_items %}
+                    <div class="d-grid gap-3">
+                        {% for item in cart_items %}
+                        <div class="panel p-4 cart-line-item">
+                            <div class="d-flex justify-content-between gap-3 flex-wrap">
+                                <div>
+                                    <h5 class="mb-1">{{ item.name }}</h5>
+                                    {% if item.extras %}
+                                        <div class="small text-light-emphasis">Extras: {{ item.extras|join:', ' }}</div>
+                                    {% endif %}
+                                    <div class="small text-light-emphasis">{{ currency_symbol }}{{ item.unit_price }} each</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-light-emphasis">Line total</div>
+                                    <div class="fw-bold fs-5">{{ currency_symbol }}{{ item.line_total }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center gap-3 mt-3 flex-wrap">
+                                <div class="quantity-switcher">
+                                    <form method="post" action="{% url 'orders:change_cart_quantity' item.item_key 'decrease' %}">{% csrf_token %}<button type="submit" class="qty-btn">−</button></form>
+                                    <span class="qty-value">{{ item.quantity }}</span>
+                                    <form method="post" action="{% url 'orders:change_cart_quantity' item.item_key 'increase' %}">{% csrf_token %}<button type="submit" class="qty-btn">+</button></form>
+                                </div>
+                                <form method="post" action="{% url 'orders:remove_from_cart' item.item_key %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-light">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-panel">Your cart is empty. Start with the menu.</div>
+                {% endif %}
+            </div>
+            <div class="col-lg-4">
+                <div class="panel p-4 sticky-summary">
+                    <h4 class="fw-bold mb-3">Order summary</h4>
+                    <div class="d-flex justify-content-between mb-2"><span>Items</span><strong>{{ cart_count }}</strong></div>
+                    <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><strong>{{ currency_symbol }}{{ cart_subtotal }}</strong></div>
+                    <div class="small text-light-emphasis mb-4">Delivery fees will be added at checkout if delivery is selected.</div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'orders:checkout' %}" class="btn btn-warning btn-lg {% if not cart_items %}disabled{% endif %}">Continue to checkout</a>
+                        <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartDrawer">Open quick cart drawer</button>
+                        <a href="{% url 'orders:menu' %}" class="btn btn-dark">Continue shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

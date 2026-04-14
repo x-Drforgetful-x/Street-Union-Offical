@@ -1,0 +1,18 @@
+{% extends 'orders/base.html' %}
+{% block title %}Order Created | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="success-panel mx-auto text-center p-5">
+            <span class="section-kicker">Order created</span>
+            <h1 class="fw-bold">Your order number is {{ order.order_number }}</h1>
+            <p class="lead text-light-emphasis">The order has been saved. Open WhatsApp now to send the full order to the business, or continue to the payment options page.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                <a href="{{ whatsapp_url }}" class="btn btn-success btn-lg" target="_blank" rel="noopener">Send order on WhatsApp</a>
+                <a href="{% url 'orders:payment_options' order.order_number %}" class="btn btn-warning btn-lg">Payment options</a>
+                <a href="{% url 'orders:track_order' %}?order_number={{ order.order_number }}" class="btn btn-outline-light btn-lg">Track order</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

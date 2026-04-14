@@ -1,0 +1,106 @@
+{% extends 'orders/base.html' %}
+{% load order_tags %}
+{% block title %}Home | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge rounded-pill text-bg-warning mb-3">Street Union Co ordering system</span>
+                <h1 class="display-4 fw-bold">Street food with a sharper digital edge.</h1>
+                <p class="lead text-light-emphasis">A premium fast-food website with weekly specials, WhatsApp checkout, smart cart flow, and a real back-office system for quotes and invoices.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'orders:menu' %}" class="btn btn-warning btn-lg fw-semibold">Order Now</a>
+                    <a href="{% url 'orders:specials' %}" class="btn btn-outline-light btn-lg">View Specials</a>
+                </div>
+                <div class="hero-stats row row-cols-2 row-cols-md-4 g-3 mt-4">
+                    <div class="col"><div class="stat-card"><strong>Fast</strong><span>Checkout flow</span></div></div>
+                    <div class="col"><div class="stat-card"><strong>Live</strong><span>Weekly promos</span></div></div>
+                    <div class="col"><div class="stat-card"><strong>Smart</strong><span>Cart drawer</span></div></div>
+                    <div class="col"><div class="stat-card"><strong>Ready</strong><span>PDF invoices</span></div></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-panel">
+                    <div class="promo-chip">This week only</div>
+                    <h3 class="fw-bold mb-3">Weekly specials tab</h3>
+                    <div class="row g-3">
+                        {% for item in featured_specials %}
+                        <div class="col-12">
+                            <div class="special-mini-card">
+                                <div>
+                                    <h5 class="mb-1">{{ item.title }}</h5>
+                                    <p class="mb-0 text-light-emphasis small">{{ item.description }}</p>
+                                </div>
+                                {% if item.promo_price %}<span class="price-pill">{{ currency_symbol }}{{ item.promo_price }}</span>{% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12"><div class="special-mini-card"><div><h5 class="mb-1">Launch your specials here</h5><p class="mb-0 text-light-emphasis small">Use admin to update your weekly offers.</p></div></div></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="section-head d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="section-kicker">Popular right now</span>
+                <h2 class="fw-bold mb-0">Featured menu items</h2>
+            </div>
+            <a href="{% url 'orders:menu' %}" class="btn btn-outline-light">See full menu</a>
+        </div>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-md-6 col-xl-3">
+                <div class="food-card h-100">
+                    <a class="food-link" href="{% url 'orders:product_detail' product.slug %}"><div class="food-image" style="background-image:url('{{ product.image_url|default:'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80' }}')"></div></a>
+                    <div class="p-3 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h5 class="mb-1"><a class="food-link-text" href="{% url 'orders:product_detail' product.slug %}">{{ product.name }}</a></h5>
+                                <p class="small text-light-emphasis mb-2">{{ product.short_description }}</p>
+                            </div>
+                            <span class="price-pill">{{ currency_symbol }}{{ product.price }}</span>
+                        </div>
+                        <div class="quantity-card-row mt-auto pt-2">
+                            <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="product-buy-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{% url 'orders:home' %}">
+                                <div class="quantity-switcher">
+                                    <button type="button" class="qty-btn js-qty-minus">−</button>
+                                    <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                                    <button type="button" class="qty-btn js-qty-plus">+</button>
+                                </div>
+                                <div class="small text-light-emphasis mt-2">In cart: {{ cart_product_quantities|get_item:product.id|default:0 }}</div>
+                                <div class="d-flex gap-2 flex-wrap mt-3">
+                                    <a href="{% url 'orders:product_detail' product.slug %}" class="btn btn-sm btn-outline-light">View</a>
+                                    <button class="btn btn-sm btn-warning" type="submit">Add to cart</button>
+                                    <button class="btn btn-sm btn-dark" type="submit" name="next" value="{% url 'orders:checkout' %}">Buy now</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="py-5 border-top border-secondary-subtle">
+    <div class="container">
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'orders:menu' %}?category={{ category.slug }}" class="category-pill d-block text-center">{{ category.name }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

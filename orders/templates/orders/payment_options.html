@@ -1,0 +1,48 @@
+{% extends 'orders/base.html' %}
+{% block title %}Payment | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="panel p-4 p-lg-5">
+            <div class="section-kicker">Payment options</div>
+            <h1 class="fw-bold mb-2">Complete payment for {{ order.order_number }}</h1>
+            <p class="text-light-emphasis">Use your order number as the payment reference when paying outside the site.</p>
+            <div class="row g-4 mt-1">
+                <div class="col-lg-4">
+                    <div class="mini-panel p-4 h-100">
+                        <h4 class="fw-bold">Order total</h4>
+                        <div class="display-6 fw-bold text-warning">{{ currency_symbol }}{{ order.total }}</div>
+                        <div class="small text-light-emphasis mt-2">Reference: {{ order.order_number }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mini-panel p-4 h-100">
+                                <h4 class="fw-bold">PayFast</h4>
+                                <p class="text-light-emphasis small">Drop in your live PayFast URL in the environment to make this button go straight to payment.</p>
+                                {% if payment_links.payfast_link %}
+                                <a href="{{ payment_links.payfast_link }}" class="btn btn-warning" target="_blank" rel="noopener">Pay with PayFast</a>
+                                {% else %}
+                                <button class="btn btn-outline-light" disabled>Configure PAYFAST_URL</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mini-panel p-4 h-100">
+                                <h4 class="fw-bold">PayShap</h4>
+                                <p class="text-light-emphasis small">Use WhatsApp with your PayShap handle or QR/payment instructions.</p>
+                                {% if payment_links.payshap_link %}
+                                <a href="{{ payment_links.payshap_link }}" class="btn btn-outline-success" target="_blank" rel="noopener">Open PayShap note</a>
+                                {% else %}
+                                <button class="btn btn-outline-light" disabled>Configure PAYSHAP_HANDLE</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

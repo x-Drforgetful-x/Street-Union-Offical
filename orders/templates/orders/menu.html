@@ -1,0 +1,69 @@
+{% extends 'orders/base.html' %}
+{% load order_tags %}
+{% block title %}Menu | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="menu-toolbar panel p-4 mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-6">
+                    <label class="form-label">Search the menu</label>
+                    <form method="get" class="d-flex gap-2">
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-lg" placeholder="Search burgers, chips, specials...">
+                        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                        <button class="btn btn-warning btn-lg">Search</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <label class="form-label">Categories</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'orders:menu' %}" class="btn {% if not selected_category %}btn-warning{% else %}btn-outline-light{% endif %}">All</a>
+                        {% for category in categories %}
+                        <a href="{% url 'orders:menu' %}?category={{ category.slug }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn {% if selected_category == category.slug %}btn-warning{% else %}btn-outline-light{% endif %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-md-6 col-xl-4">
+                <div class="food-card h-100">
+                    <a class="food-link" href="{% url 'orders:product_detail' product.slug %}"><div class="food-image" style="background-image:url('{{ product.image_url|default:'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80' }}')"></div></a>
+                    <div class="p-3 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                            <div>
+                                <div class="small text-warning text-uppercase fw-semibold">{{ product.category.name }}</div>
+                                <h5 class="mb-1"><a class="food-link-text" href="{% url 'orders:product_detail' product.slug %}">{{ product.name }}</a></h5>
+                            </div>
+                            <span class="price-pill">{{ currency_symbol }}{{ product.price }}</span>
+                        </div>
+                        <p class="text-light-emphasis small flex-grow-1">{{ product.short_description }}</p>
+                        <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="product-buy-form mt-auto">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'orders:menu' %}{% if selected_category or search_query %}?{% endif %}{% if selected_category %}category={{ selected_category }}{% endif %}{% if selected_category and search_query %}&{% endif %}{% if search_query %}q={{ search_query }}{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
+                                <div class="quantity-switcher">
+                                    <button type="button" class="qty-btn js-qty-minus">−</button>
+                                    <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                                    <button type="button" class="qty-btn js-qty-plus">+</button>
+                                </div>
+                                <div class="small text-light-emphasis">In cart: {{ cart_product_quantities|get_item:product.id|default:0 }}</div>
+                            </div>
+                            <div class="d-flex gap-2 mt-3 flex-wrap">
+                                <a class="btn btn-outline-light" href="{% url 'orders:product_detail' product.slug %}">View item</a>
+                                <button class="btn btn-warning" type="submit">Add to cart</button>
+                                <button class="btn btn-dark" type="submit" name="next" value="{% url 'orders:checkout' %}">Buy now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12"><div class="empty-panel">No menu items matched your search.</div></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

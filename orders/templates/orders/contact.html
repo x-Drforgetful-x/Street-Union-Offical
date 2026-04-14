@@ -1,0 +1,23 @@
+{% extends 'orders/base.html' %}
+{% block title %}Contact | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <span class="section-kicker">Get in touch</span>
+                <h1 class="fw-bold">Contact the store</h1>
+                <p class="text-light-emphasis">Connect with the restaurant by phone, WhatsApp, or email.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel p-4">
+                    <div class="mb-3"><strong>WhatsApp:</strong> {{ site_settings.whatsapp_number|default:whatsapp_number }}</div>
+                    <div class="mb-3"><strong>Phone:</strong> {{ site_settings.phone_number|default:'067 000 0000' }}</div>
+                    <div class="mb-3"><strong>Email:</strong> {{ site_settings.support_email|default:'hello@example.com' }}</div>
+                    <div class="mb-0"><strong>Address:</strong> {{ site_settings.address|default:'Pretoria, South Africa' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

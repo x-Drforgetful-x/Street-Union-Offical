@@ -1,0 +1,54 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block title %}Dashboard | {{ business_name }}{% endblock %}
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+    <div>
+        <span class="section-kicker">Control room</span>
+        <h1 class="fw-bold mb-0">Business dashboard</h1>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-warning" href="{% url 'orders:kitchen_screen' %}">Open kitchen screen</a>
+        <a class="btn btn-outline-light" href="{% url 'orders:dashboard_orders' %}">Live order board</a>
+    </div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3"><div class="panel p-4"><span>Orders</span><h3 class="fw-bold mt-2">{{ stats.orders_count }}</h3></div></div>
+    <div class="col-md-6 col-xl-3"><div class="panel p-4"><span>Products</span><h3 class="fw-bold mt-2">{{ stats.products_count }}</h3></div></div>
+    <div class="col-md-6 col-xl-3"><div class="panel p-4"><span>Quotes</span><h3 class="fw-bold mt-2">{{ stats.quotes_count }}</h3></div></div>
+    <div class="col-md-6 col-xl-3"><div class="panel p-4"><span>Sales</span><h3 class="fw-bold mt-2">{{ currency_symbol }}{{ stats.sales_total }}</h3></div></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="panel p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="fw-bold mb-0">Recent orders</h4>
+                <a class="btn btn-sm btn-outline-light" href="{% url 'orders:dashboard_orders' %}">Open full board</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-borderless align-middle">
+                    <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for order in recent_orders %}
+                    <tr><td>{{ order.order_number }}</td><td>{{ order.customer }}</td><td>{{ currency_symbol }}{{ order.total }}</td><td><span class="status-badge">{{ order.get_status_display }}</span></td></tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-light-emphasis">No orders yet.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel p-4 h-100">
+            <h4 class="fw-bold mb-3">Top categories</h4>
+            <div class="d-grid gap-2">
+                {% for category in top_categories %}
+                <div class="mini-panel d-flex justify-content-between p-3"><span>{{ category.name }}</span><strong>{{ category.item_count }}</strong></div>
+                {% empty %}
+                <div class="text-light-emphasis">No categories yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

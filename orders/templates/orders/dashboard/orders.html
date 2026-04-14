@@ -1,0 +1,83 @@
+{% extends 'orders/dashboard/base_dashboard.html' %}
+{% block dashboard_content %}
+<div class="panel p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div>
+            <div class="section-kicker">Live order dashboard</div>
+            <h1 class="fw-bold mb-0">Orders board</h1>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <span class="small text-light-emphasis">Auto refresh every 15 seconds</span>
+            <button class="btn btn-outline-light btn-sm" id="manualRefreshBtn" type="button">Refresh now</button>
+            <a href="{% url 'orders:kitchen_screen' %}" class="btn btn-warning btn-sm">Kitchen screen</a>
+        </div>
+    </div>
+    <div class="small text-light-emphasis mb-3">When a new order arrives the board refreshes and plays a notification beep.</div>
+    <div id="liveOrderGrid" class="row g-4">
+        {% for order in orders %}
+        <div class="col-12" data-order-id="{{ order.id }}">
+            <div class="panel p-4 order-board-card">
+                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                    <div>
+                        <div class="section-kicker mb-1">{{ order.get_order_type_display }}</div>
+                        <h4 class="fw-bold mb-1">{{ order.order_number }}</h4>
+                        <div class="text-light-emphasis">{{ order.customer }} · {{ order.customer.phone_number }}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="price-pill">{{ currency_symbol }}{{ order.total }}</div>
+                        <div class="small text-light-emphasis mt-2">{{ order.created_at|date:'d M Y H:i' }}</div>
+                    </div>
+                </div>
+                <div class="row g-3 align-items-start">
+                    <div class="col-lg-5">
+                        <div class="mini-panel p-3 h-100">
+                            <div class="fw-semibold mb-2">Items</div>
+                            <ul class="list-unstyled small mb-0 d-grid gap-2">
+                                {% for item in order.items.all %}
+                                <li><strong>{{ item.quantity }}x</strong> {{ item.product_name }} {% if item.extras_summary %}<span class="text-light-emphasis">· {{ item.extras_summary }}</span>{% endif %}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="status-badge">{{ order.get_status_display }}</span>
+                            {% if order.delivery_address %}<span class="badge text-bg-dark border border-secondary-subtle">{{ order.delivery_address }}</span>{% endif %}
+                        </div>
+                        <form method="post" action="{% url 'orders:update_order_status' order.id %}" class="row g-2 align-items-end mb-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'orders:dashboard_orders' %}">
+                            <div class="col-sm-6 col-md-4">
+                                <label class="form-label small">Status</label>
+                                <select name="status" class="form-select form-select-sm">
+                                    {% for value,label in status_form.fields.status.choices %}
+                                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <button class="btn btn-outline-light btn-sm w-100" type="submit">Update</button>
+                            </div>
+                        </form>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="{% url 'orders:send_order_whatsapp_reply' order.id 'confirm' %}" class="btn btn-success btn-sm" target="_blank">Send confirm</a>
+                            <a href="{% url 'orders:send_order_whatsapp_reply' order.id 'status' %}" class="btn btn-outline-success btn-sm" target="_blank">Send status</a>
+                            <a href="{% url 'orders:create_quote_from_order' order.id %}" class="btn btn-outline-light btn-sm">Create quote</a>
+                            <a href="{% url 'orders:create_invoice_from_order' order.id %}" class="btn btn-warning btn-sm">Create invoice</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><div class="empty-panel">No orders available.</div></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+window.orderFeedUrl = "{% url 'orders:dashboard_orders_feed' %}";
+window.enableLiveOrderBoard = true;
+</script>
+{% endblock %}
